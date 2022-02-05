@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Arrays;
 
 public class CommandRunner {
@@ -15,20 +16,24 @@ public class CommandRunner {
     private CommandHistory history = new CommandHistory();
     private boolean finished = false;
 
-
     public void run(String command) {
-        // String[] commands = command.split("\\^");
+        history.add(command);
 
-        // parsear multiples comandos
-        // try runSingle() en cada uno
-        // agregar al history el comando entero si si se ejecuto
+        String[] commands = command.split("\\^");
+
+        for (String cmd : commands) {
+            try {
+                runSingle(cmd.trim());
+            } catch (Exception e) {
+                System.err.println(e.toString());
+            }
+        }
     }
 
-    private void runSingle(String command) throws UnsupportedOperationException {
+    private void runSingle(String command) throws UnsupportedOperationException, IOException, InterruptedException {
         String[] commandSplit = command.split(" ");
         String commandName = commandSplit[0];
         String[] args = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
-
 
         switch (commandName) {
             case "ls":
@@ -69,8 +74,7 @@ public class CommandRunner {
     }
 
     private void handleLs(String command, String[] args) {
-        // Runtime getRuntime
-        // Process
+
     }
 
     private void handleCd(String command, String[] args) {
