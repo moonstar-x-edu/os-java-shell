@@ -73,8 +73,8 @@ public class CommandRunner {
         }
     }
 
-    private void handleLs(String command, String[] args) {
-
+    private void handleLs(String command, String[] args) throws IOException, InterruptedException {
+        new ProcessBuilder().inheritIO().command(command).start().waitFor(); // Passing path argument makes this throw
     }
 
     private void handleCd(String command, String[] args) {
