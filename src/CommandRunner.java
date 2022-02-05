@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class CommandRunner {
     public static final String[] SUPPORTED_COMMANDS = {
@@ -98,7 +100,20 @@ public class CommandRunner {
     }
 
     private void handleHistory(String command, String[] args) {
+        String[] keys = { "-n" };
+        HashMap<String, String> parsedArgs = Utils.parseArgs(args, keys);
 
+        List<String> historyList = history.getHistory();
+        int n = Integer.parseInt(parsedArgs.getOrDefault("-n", CommandHistory.SIZE.toString()));
+
+        if (n < 1 || n > CommandHistory.SIZE) {
+            throw new IllegalArgumentException("-n must be higher than 1 and lesser than " + CommandHistory.SIZE);
+        }
+
+        int maxHistory = Math.min(historyList.size(), n);
+        for (int i = 0; i < maxHistory; i++) {
+            System.out.printf("%d\t%s%n", i + 1, historyList.get(i));
+        }
     }
 
     private void handleExit() {

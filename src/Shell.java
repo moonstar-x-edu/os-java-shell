@@ -12,7 +12,6 @@ public class Shell {
 
             String command = in.nextLine();
             runner.run(command);
-
         } while (!runner.shouldExit());
     }
 }
