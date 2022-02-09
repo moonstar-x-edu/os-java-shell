@@ -24,6 +24,7 @@ public class CommandRunner {
     private boolean finished = false;
 
     private String pwd = System.getProperty("user.dir");
+    private boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     public void run(String command) {
         history.add(command);
@@ -109,20 +110,30 @@ public class CommandRunner {
         pb.command(command.split(" ")).start().waitFor();
     }
 
-    private void handlePing(String command, String[] args) throws IOException{
-        // normalizar los argumentos -n / -c
-        if(args.length==3){
-            args[1]= System.getProperty("os.name").toLowerCase().contains("win")?"-n":"-c";
-        }
-        String host=args[0];
-        ProcessBuilder processBuilder = args.length==3?new ProcessBuilder("ping",args[1],args[2], host):new ProcessBuilder("ping", host);
-        Process process = processBuilder.start();
-        BufferedReader result = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        result.lines().forEach(System.out::println);
+    private void handlePing(String command, String[] args) throws IOException, InterruptedException {
+        String[] keys = { "-n" };
+        HashMap<String, String> parsedArgs = Utils.parseArgs(args, keys);
+
+        String numArgFlag = isWindows ? "-n" : "-c";
+        String numberArgValue = parsedArgs.get("-n");
+        String host = parsedArgs.get("positional-0");
+
+        ProcessBuilder processBuilder = numberArgValue != null ?
+                new ProcessBuilder("ping", numArgFlag, numberArgValue, host) :
+                new ProcessBuilder("ping", host);
+
+        processBuilder.inheritIO().start().waitFor();
     }
 
     private void handleIpConfig(String command) {
         // if platform Windows run
+        BufferReader in = null;
+        try{
+            Process p = Runtime.getRuntime().exec(command);
+            In
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleIfConfig(String command) {

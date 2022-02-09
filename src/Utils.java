@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Utils {
@@ -16,8 +17,16 @@ public class Utils {
 
         for (String option : options) {
             int keyIndex = arrayIndexOf(args, option);
-            if (keyIndex + 1 < args.length) {
+            if (keyIndex > -1 && keyIndex + 1 < args.length) {
                 map.put(option, args[keyIndex + 1]);
+            }
+        }
+
+        int counter = 0;
+        for (String arg : args) {
+            if (!map.containsKey(arg) && !map.containsValue(arg)) {
+                map.put("positional-" + counter, arg);
+                counter++;
             }
         }
 
