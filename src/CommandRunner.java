@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -125,19 +123,26 @@ public class CommandRunner {
         processBuilder.inheritIO().start().waitFor();
     }
 
-    private void handleIpConfig(String command) {
-        // if platform Windows run
-        BufferReader in = null;
-        try{
-            Process p = Runtime.getRuntime().exec(command);
-            In
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void handleIpConfig(String command) throws IOException, InterruptedException {
+        if (!isWindows) {
+            throw new IllegalArgumentException("This command is only available on Windows.");
         }
+
+        ProcessBuilder pb = new ProcessBuilder().inheritIO();
+        pb.directory(new File(pwd));
+
+        pb.command("ipconfig").start().waitFor();
     }
 
-    private void handleIfConfig(String command) {
-        // if platform unix darwin run
+    private void handleIfConfig(String command) throws IOException, InterruptedException {
+        if (isWindows) {
+            throw new IllegalArgumentException("This command is only available on Unix.");
+        }
+
+        ProcessBuilder pb = new ProcessBuilder().inheritIO();
+        pb.directory(new File(pwd));
+
+        pb.command("ifconfig").start().waitFor();
     }
 
     private void handleHistory(String command, String[] args) {
