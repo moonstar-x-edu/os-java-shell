@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -84,7 +86,7 @@ public class CommandRunner {
         ProcessBuilder pb = new ProcessBuilder().inheritIO();
         pb.directory(new File(pwd));
 
-        pb.command(command).start().waitFor(); // Passing path argument makes this throw
+        pb.command(command.split(" ")).start().waitFor();
     }
 
     private void handleCd(String command, String[] args) throws IOException {
@@ -100,12 +102,23 @@ public class CommandRunner {
         pwd = pathAsFile.getCanonicalPath();
     }
 
-    private void handleEcho(String command, String[] args) {
+    private void handleEcho(String command, String[] args) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder().inheritIO();
+        pb.directory(new File(pwd));
 
+        pb.command(command.split(" ")).start().waitFor();
     }
 
-    private void handlePing(String command, String[] args) {
+    private void handlePing(String command, String[] args) throws IOException{
         // normalizar los argumentos -n / -c
+        if(args.length==3){
+            args[1]= System.getProperty("os.name").toLowerCase().contains("win")?"-n":"-c";
+        }
+        String host=args[0];
+        ProcessBuilder processBuilder = args.length==3?new ProcessBuilder("ping",args[1],args[2], host):new ProcessBuilder("ping", host);
+        Process process = processBuilder.start();
+        BufferedReader result = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        result.lines().forEach(System.out::println);
     }
 
     private void handleIpConfig(String command) {
