@@ -8,7 +8,7 @@ public class Shell {
         CommandRunner runner = new CommandRunner();
 
         do {
-            System.out.print(PS2 + " ");
+            System.out.print(runner.getPWD() + " " + PS2 + " ");
 
             String command = in.nextLine();
             runner.run(command);

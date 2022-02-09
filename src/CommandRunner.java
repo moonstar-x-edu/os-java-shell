@@ -1,4 +1,7 @@
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +20,8 @@ public class CommandRunner {
 
     private CommandHistory history = new CommandHistory();
     private boolean finished = false;
+
+    private String pwd = System.getProperty("user.dir");
 
     public void run(String command) {
         history.add(command);
@@ -76,11 +81,23 @@ public class CommandRunner {
     }
 
     private void handleLs(String command, String[] args) throws IOException, InterruptedException {
-        new ProcessBuilder().inheritIO().command(command).start().waitFor(); // Passing path argument makes this throw
+        ProcessBuilder pb = new ProcessBuilder().inheritIO();
+        pb.directory(new File(pwd));
+
+        pb.command(command).start().waitFor(); // Passing path argument makes this throw
     }
 
-    private void handleCd(String command, String[] args) {
+    private void handleCd(String command, String[] args) throws IOException {
+        String pathArgument = args.length < 1 ? System.getProperty("user.dir") : args[0];
 
+        Path tentativePath = Paths.get(pwd).resolve(pathArgument);
+        File pathAsFile = tentativePath.toFile();
+
+        if (!pathAsFile.exists() || !pathAsFile.isDirectory()) {
+            throw new IllegalArgumentException("A valid directory should be specified.");
+        }
+
+        pwd = pathAsFile.getCanonicalPath();
     }
 
     private void handleEcho(String command, String[] args) {
@@ -122,5 +139,9 @@ public class CommandRunner {
 
     public boolean shouldExit() {
         return finished;
+    }
+
+    public String getPWD() {
+        return pwd;
     }
 }
