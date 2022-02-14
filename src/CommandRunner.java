@@ -22,7 +22,7 @@ public class CommandRunner {
             try {
                 runSingle(cmd.trim());
             } catch (Exception e) {
-                System.err.println(e.toString());
+                System.err.println(e.getMessage());
             }
         }
     }
