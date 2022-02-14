@@ -7,22 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CommandRunner {
-    public static final String[] SUPPORTED_COMMANDS = {
-            "ls",
-            "cd",
-            "echo",
-            "ping",
-            "ipconfig",
-            "ifconfig",
-            "history",
-            "exit"
-    };
-
-    private CommandHistory history = new CommandHistory();
+    private final CommandHistory history = new CommandHistory();
     private boolean finished = false;
 
     private String pwd = System.getProperty("user.dir");
-    private boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    private final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     public void run(String command) {
         history.add(command);
