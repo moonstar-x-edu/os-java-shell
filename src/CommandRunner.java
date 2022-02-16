@@ -20,6 +20,7 @@ public class CommandRunner {
 
         for (String cmd : commands) {
             try {
+                System.out.println(cmd.trim() + ":");
                 runSingle(cmd.trim());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
@@ -39,6 +40,10 @@ public class CommandRunner {
 
             case "cd":
                 handleCd(command, args);
+                break;
+
+            case "pwd":
+                handlePwd(command, args);
                 break;
 
             case "echo":
@@ -88,6 +93,10 @@ public class CommandRunner {
         }
 
         pwd = pathAsFile.getCanonicalPath();
+    }
+
+    private void handlePwd(String command, String[] args) {
+        System.out.println(pwd);
     }
 
     private void handleEcho(String command, String[] args) throws IOException, InterruptedException {
