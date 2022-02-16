@@ -16,4 +16,16 @@ public class CommandHistory {
 
         history.add(command);
     }
+
+    public String get(int index) {
+        if (index == -1) {
+            return getLast();
+        }
+
+        return history.get(index - 1);
+    }
+
+    public String getLast() {
+        return history.get(history.size() - 1);
+    }
 }

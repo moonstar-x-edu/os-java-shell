@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandRunner {
     private final CommandHistory history = new CommandHistory();
@@ -13,8 +15,12 @@ public class CommandRunner {
     private String pwd = System.getProperty("user.dir");
     private final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+    private final Pattern previousCommandPattern = Pattern.compile("!(\\d+|#)");
+
     public void run(String command) {
-        history.add(command);
+        if (!command.matches(previousCommandPattern.toString())) {
+            history.add(command);
+        }
 
         String[] commands = command.split("\\^");
 
@@ -71,7 +77,13 @@ public class CommandRunner {
                 break;
 
             default:
-                throw new UnsupportedOperationException(commandName + " is not a valid command!");
+                Integer previousCommandIndex = matchPreviousCommand(command);
+
+                if (previousCommandIndex == null) {
+                    throw new UnsupportedOperationException(commandName + " is not a valid command!");
+                }
+
+                handlePrevious(previousCommandIndex);
         }
     }
 
@@ -158,6 +170,22 @@ public class CommandRunner {
         for (int i = 0; i < maxHistory; i++) {
             System.out.printf("%d\t%s%n", i + 1, historyList.get(i));
         }
+    }
+
+    private Integer matchPreviousCommand(String command) {
+        Matcher matcher = previousCommandPattern.matcher(command);
+
+        if (matcher.find()) {
+            String index = matcher.group(1);
+
+            return index.equals("#") ? -1 : Integer.parseInt(index);
+        }
+
+        return null;
+    }
+
+    private void handlePrevious(int index) {
+        run(history.get(index));
     }
 
     private void handleExit() {
